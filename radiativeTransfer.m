@@ -56,3 +56,11 @@ end
 % energy density as a function of [x t] and [t]
 obs.energyDensity = squeeze(tensorprod(obs.dpsi',obs.energy,1));
 obs.energyDomain = squeeze(tensorprod(obs.dx',obs.energyDensity,1));
+
+% TODO
+% 1) parallel for loop on packages: use parfor, but need to change the way
+% observations are made : initialize for one package, and perform a final
+% sum outside of the loop
+% 2) check normalizations are correct by running the same simulation for
+% different numbers of particles, same order of magnitude of result should
+% be obtained
