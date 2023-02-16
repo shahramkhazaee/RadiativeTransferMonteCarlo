@@ -12,9 +12,13 @@ cospsi(cospsi<-1)=-1;
 psi = acos(cospsi);
 
 % accumulate energies
-E = histcounts2( psi, r, obs.binPsi, obs.binX ).*dE;
+ind = P.p;
+Ep = histcounts2( psi(ind), r(ind), obs.binPsi, obs.binX ).*dE;
+Es = histcounts2( psi(~ind), r(~ind), obs.binPsi, obs.binX ).*dE;
 if it==1
-    obs.energy(:,:,1) = E;
+    obs.energy(:,:,1) = Ep;
+    obs.energy(:,:,2) = Es;
 else
-    obs.energy(:,:,it) = obs.energy(:,:,it) + E;
+    obs.energy(:,:,it,1) = obs.energy(:,:,it,1) + Ep;
+    obs.energy(:,:,it,2) = obs.energy(:,:,it,2) + Es;
 end

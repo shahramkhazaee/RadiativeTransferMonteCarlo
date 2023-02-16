@@ -4,7 +4,7 @@
 % uniform.
 
 % Physics
-physics = struct( 'acoustics', true, ...
+physics = struct( 'acoustics', false, ...
                   'dimension', 2 );
 
 % Point source
@@ -30,5 +30,5 @@ observation = struct('sensors', 0:0.05:10, ... % bins for histograms
 % radiative transfer solution - 2D - elastic
 %obs = radiativeTransferElastic( source, material, observation );
 obs = radiativeTransfer( physics, source, material, observation );
-M = plotGrid('full',obs,1);
-scatterDirections(obs,30);
+%M = plotGrid('full',obs,1);
+%scatterDirections(obs,30);

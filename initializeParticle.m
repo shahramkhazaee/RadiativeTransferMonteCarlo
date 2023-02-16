@@ -33,9 +33,9 @@ end
 t = zeros(N,1);
 
 % material velocity of the background for each particle
-if physics.acoustics && isfield(material,'v')
+if acoustics && isfield(material,'v')
     v = material.v*ones(N,1);
-elseif ~physics.acoustics && isfield(material,'vp') && isfield(material,'vs')
+elseif ~acoustics && isfield(material,'vp') && isfield(material,'vs')
     v = material.vs*ones(N,1);
     v(p) = material.vp;
 else
@@ -43,9 +43,10 @@ else
 end
 
 % meanFreePath for each particle
-if isfield(material,'meanFreePath')
+if acoustics && isfield(material,'meanFreePath')
     mfp = material.meanFreePath*ones(N,1);
-elseif isfield(material,'meanFreePathP') && isfield(material,'meanFreePathS')
+elseif ~acoustics && isfield(material,'meanFreePathP') ...
+                  && isfield(material,'meanFreePathS')
     mfp = material.meanFreePathS*ones(N,1);
     mfp(p) = material.meanFreePathP;
 else

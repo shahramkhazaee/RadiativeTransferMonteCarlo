@@ -24,7 +24,7 @@ while any(ind)
 
     % scatter particles (except in last jump)
     % select new polarization and angle
-    theta = mat.invcdf(rand(sum(ind2),1));
+    [theta,P] = scatterParticle(mat,P,ind2);
     if P.d==3
         phi = rand(sum(ind2),1);
     elseif P.d==2
@@ -67,36 +67,45 @@ tj = sort(tj,2);
 tj = tj(:,1);
 end
 
-function P = scatterParticle(mat,P)
-%function [dtot,p,v,meanFreePath] = scatterParticle(d,mat,p,v,meanFreePath)
-N = P.N;
+%
+function [th,P] = scatterParticle(mat,P,ind)
+N = sum(ind);
 rd = rand(N,1);
-th = mat.invcdf(rd);
-% % elastics
-% else
-%     p0 = p;
-%     % change polarization
-%     probabilityOfChange = mat.P2P*p + mat.S2S*(1-p);
-%     change = rand(N,1)>probabilityOfChange;
-%     p(change)=~p(change);
-%     % velocity for each particle
-%     v(change&p) = mat.vp;
-%     v(change&~p) = mat.vs;
-%     % meanFreePath for each particle
-%     meanFreePath(change&p) = mat.meanFreePathP;
-%     meanFreePath(change&~p) = mat.meanFreePathS;    
-%     % change direction depending on polarizations
-%     th = zeros(N,1);
-%     th(p0&p) = mat.invcdfPP(rand(nnz(p0&p),1));
-%     th(p0&~p) = mat.invcdfPS(rand(nnz(p0&~p),1));
-%     th(~p0&p) = mat.invcdfSP(rand(nnz(~p0&p),1));
-%     th(~p0&~p) = mat.invcdfSS(rand(nnz(~p0&~p),1));
-% end
-%P.d = P.d+th;
-P.theta = mod(P.theta+th,2*pi);
-ind = P.theta>pi;
-P.theta(ind) = -(P.theta(ind)-2*pi);
-P.costheta = cos(P.theta);
-%P.costheta = cos(acos(P.costheta)+th);
+% acoustics
+if P.acoustics
+    th = mat.invcdf(rd);
+% elastics
+else
+    % data
+    p = P.p(ind);
+    p0 = p;
+    v = P.v(ind);
+    meanFreePath = P.meanFreePath(ind);
 
+    % change polarization
+    probabilityOfChange = mat.P2P*p + mat.S2S*(1-p);
+    change = rand(N,1)>probabilityOfChange;
+    p(change)=~p(change);
+
+    % velocity for each particle
+    v(change&p) = mat.vp;
+    v(change&~p) = mat.vs;
+
+    % meanFreePath for each particle
+    meanFreePath(change&p) = mat.meanFreePathP;
+    meanFreePath(change&~p) = mat.meanFreePathS;  
+
+    % change direction depending on polarizations
+    th = zeros(N,1);
+    th(p0&p) = mat.invcdfPP(rand(nnz(p0&p),1));
+    th(p0&~p) = mat.invcdfPS(rand(nnz(p0&~p),1));
+    th(~p0&p) = mat.invcdfSP(rand(nnz(~p0&p),1));
+    th(~p0&~p) = mat.invcdfSS(rand(nnz(~p0&~p),1));
+
+    % store data
+    P.p(ind) = p;
+    P.v(ind) = v;
+    P.meanFreePath(ind) = meanFreePath;
+
+end
 end

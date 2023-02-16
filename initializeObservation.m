@@ -19,7 +19,7 @@ x = (binX(1:end-1)+binX(2:end))/2;
 Nx = length(x);
 
 % initialize matrix of observations
-energy = zeros(Npsi,Nx,Nt);
+energy = zeros(Npsi,Nx,Nt,2);
 
 % energy in a small volume of the domain
 [dx,dpsi]= volumeEnergy(d,x,psi);
@@ -36,7 +36,7 @@ obs = struct('t', t, ...               % time instants
              'x', x, ...               % sensor positions
              'Nx', Nx, ...             % number of positions
              'dx', dx, ...             % weight of small interval of radius
-             'energy', energy, ...     % matrix of observations
+             'energy', energy, ...     % matrix of observations [Npsi*Nx*Nt*2]
              'dE', dE, ...             % energy of a single particle
              'd', d, ...               % dimension of the problem
              'acoustics', acoustics ); % true=acoustics, false=elastics

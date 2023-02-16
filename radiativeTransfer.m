@@ -59,7 +59,7 @@ end
 % accumulate energy over all packages
 obs.energy = energy;
 
-% energy density as a function of [x t] and [t]
+% energy density as a function of [x t p] and [t p]
 obs.energyDensity = squeeze(tensorprod(obs.dpsi',obs.energy,1));
 obs.energyDomain = squeeze(tensorprod(obs.dx',obs.energyDensity,1));
 
