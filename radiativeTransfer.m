@@ -15,10 +15,11 @@ Np = ceil(source.numberParticles/Npk); % number of packets
 % binX      : bins for histograms in positions
 % x         : sensor positions
 % Nx        : number of positions
-% energy    : matrix of observations size [Nx Nth Nt]
+% energy    : matrix of observations size [Nx Nth Nt 2]
 % dV        : small volume of domain
 % dE        : energy of a single particle
 obs = initializeObservation( physics, observation, Np*Npk );
+energy = obs.energy;
 material = prepareSigma(material);        % prepare scattering cross sections 
 
 % loop on packages of particles
@@ -36,7 +37,7 @@ for ip = 1:Np
     % v            : propagation velocity
     % t            : current time for the particle
     P = initializeParticle( Npk, physics, source, material );
-    obs.energy(:,:,1) = obs.energy(:,:,1) + observeTime(obs,P);
+    obsi = observeTime(obs,P,1);
 
     % loop on time
     for i1 = 2:obs.Nt
@@ -44,23 +45,27 @@ for ip = 1:Np
         % propagate particles
         P = propagateParticle(material,P,obs.t(i1));
 
-        % observe energies (as a function of [Psi x t])
-        obs.energy(:,:,i1) = obs.energy(:,:,i1) + observeTime(obs,P);
+        % observe energies (as a function of [Psi x t p])
+        obsi = observeTime(obsi,P,i1);
 
     % end of loop on time
     end
 
+    energy = energy + obsi.energy;
+
 % end of loop on packages
 end
+
+% accumulate energy over all packages
+obs.energy = energy;
 
 % energy density as a function of [x t] and [t]
 obs.energyDensity = squeeze(tensorprod(obs.dpsi',obs.energy,1));
 obs.energyDomain = squeeze(tensorprod(obs.dx',obs.energyDensity,1));
 
 % TODO
-% 1) parallel for loop on packages: use parfor, but need to change the way
-% observations are made : initialize for one package, and perform a final
-% sum outside of the loop
-% 2) check normalizations are correct by running the same simulation for
+% --- check normalizations are correct by running the same simulation for
 % different numbers of particles, same order of magnitude of result should
 % be obtained
+% --- rather than computing histograms with uniform angles, compute
+% histograms with uniform angle*cosine

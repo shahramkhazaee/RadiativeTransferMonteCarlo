@@ -1,4 +1,4 @@
-function E = observeTime(obs,P)
+function obs = observeTime(obs,P,it)
 
 % compute energy normalization
 dE = obs.dE./(obs.dpsi'*obs.dx);
@@ -13,3 +13,8 @@ psi = acos(cospsi);
 
 % accumulate energies
 E = histcounts2( psi, r, obs.binPsi, obs.binX ).*dE;
+if it==1
+    obs.energy(:,:,1) = E;
+else
+    obs.energy(:,:,it) = obs.energy(:,:,it) + E;
+end
