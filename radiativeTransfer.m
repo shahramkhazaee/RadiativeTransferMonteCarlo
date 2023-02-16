@@ -23,7 +23,7 @@ energy = obs.energy;
 material = prepareSigma(material);        % prepare scattering cross sections 
 
 % loop on packages of particles
-for ip = 1:Np
+parfor ip = 1:Np
 
     % PARTICLES
     % N            : number of particles
